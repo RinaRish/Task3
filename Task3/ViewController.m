@@ -9,10 +9,15 @@
 #import <Twitter/Twitter.h>
 #import <Social/Social.h>
 #import "ViewController.h"
+#import "DetailViewController.h"
+#import "TweetCell.h"
+
+
 
 
 @interface ViewController ()
-//@property (nonatomic) ACAccountStore *accountStore;
+
+
 @end
 
 @implementation ViewController
@@ -23,12 +28,10 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    //[self fetchTimelineForUser:@"rinarish@mail.ru"];
     [self getTimeLine];
-    
-    
 
 }
-
 
 
 - (void)getTimeLine {
@@ -47,12 +50,12 @@
              if ([arrayOfAccounts count] > 0)
              {
                  ACAccount *twitterAccount = [arrayOfAccounts lastObject];
-                 
-                 NSURL *requestURL = [NSURL URLWithString:@"http://api.twitter.com/1/statuses/user_timeline.json"];
+                 //http://api.twitter.com/1/statuses/user_timeline.json
+                 NSURL *requestURL = [NSURL URLWithString:@"https://api.twitter.com/1/statuses/home_timeline.json"];
                  
                  NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
                  [parameters setObject:@"20" forKey:@"count"];
-                 [parameters setObject:@"name" forKey:@"screen_name"];
+                 //[parameters setObject:@"name" forKey:@"screen_name"];
                  //[parameters setObject:@"20" forKey:@"include_entities"];
                  
                  SLRequest *postRequest = [SLRequest
@@ -85,7 +88,7 @@
          }
      }];
 }
-
+//
 
 
 - (void)didReceiveMemoryWarning
@@ -106,21 +109,45 @@
     
     static NSString *CellIdentifier = @"Cell";
     
-    UITableViewCell *cell = [self.tweetTableView
+    TweetCell *cell = [self.tweetTableView
                              dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil) {
-        cell = [[UITableViewCell alloc]
+        cell = [[TweetCell alloc]
                 initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
     NSDictionary *tweet = self.dataSource[[indexPath row]];
 
-    cell.textLabel.text = tweet[@"screen_name"];
-    cell.detailTextLabel.text = tweet[@"text"];
+    cell.name.text = [tweet valueForKeyPath:@"user.name"];
+    cell.tweetText.text = tweet[@"text"];
+   // cell.poster.image = [UIImage imageNamed:[tweet valueForKeyPath:@"user.profile_image_url"]];
+    dispatch_queue_t main = dispatch_get_main_queue();
+    NSURL *imageURL = [NSURL URLWithString:[[tweet objectForKey:@"user"] objectForKey:@"profile_image_url"]];
+    NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+    dispatch_async(main, ^{
+        cell.poster.image = [UIImage imageWithData:imageData];
+    });
     return cell;
 }
 
+#pragma mark - UITableView Delegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+//    DetailViewController *vc = [[DetailViewController alloc] init];
+//    vc.tweetDetail = [[self.dataSource objectAtIndex:[indexPath row]] valueForKeyPath:@"text"];
+//    
+
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"Detail"]) {
+        DetailViewController *vc = (DetailViewController *)segue.destinationViewController;
+        vc.tweetDetail = [self.dataSource[[self.tweetTableView indexPathForSelectedRow].row] valueForKeyPath:@"text"];//[[self.tableView indexPathForSelectedRow].row]; //@"My label";
+        
+    }
+}
 
 @end
 

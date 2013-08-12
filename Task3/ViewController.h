@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 
-@interface ViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface ViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, NSCoding>
 
 @property (strong, nonatomic) IBOutlet UITableView *tweetTableView;
 @property (strong, nonatomic) NSArray *dataSource;
