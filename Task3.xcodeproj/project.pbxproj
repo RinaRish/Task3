@@ -24,6 +24,11 @@
 		994E58F017B4273E006794BC /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 994E58EF17B4273E006794BC /* Social.framework */; };
 		996F8DD617B535A6002A6E04 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 996F8DD517B535A6002A6E04 /* DetailViewController.m */; };
 		996F8E0417B7D522002A6E04 /* TweetCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 996F8E0317B7D522002A6E04 /* TweetCell.m */; };
+		996F8E0C17BB8E7B002A6E04 /* Task3-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 996F8E0B17BB8E7B002A6E04 /* Task3-Info.plist */; };
+		996F8E0E17BB8EB0002A6E04 /* Tweets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 996F8E0D17BB8EB0002A6E04 /* Tweets.plist */; };
+		996F8E1017BC018B002A6E04 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 996F8E0F17BC018B002A6E04 /* SystemConfiguration.framework */; };
+		996F8E1517BC0972002A6E04 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 996F8E1417BC057B002A6E04 /* Reachability.m */; };
+		996F8E1917BC21C1002A6E04 /* placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 996F8E1817BC21C1002A6E04 /* placeholder.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,7 +36,6 @@
 		994E58C517B41E1D006794BC /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		994E58C717B41E1D006794BC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		994E58C917B41E1D006794BC /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		994E58CD17B41E1D006794BC /* Task3-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Task3-Info.plist"; sourceTree = "<group>"; };
 		994E58CF17B41E1D006794BC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		994E58D117B41E1D006794BC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		994E58D317B41E1D006794BC /* Task3-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Task3-Prefix.pch"; sourceTree = "<group>"; };
@@ -52,6 +56,12 @@
 		996F8DD517B535A6002A6E04 /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DetailViewController.m; path = ../DetailViewController.m; sourceTree = "<group>"; };
 		996F8E0217B7D522002A6E04 /* TweetCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TweetCell.h; sourceTree = "<group>"; };
 		996F8E0317B7D522002A6E04 /* TweetCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TweetCell.m; sourceTree = "<group>"; };
+		996F8E0B17BB8E7B002A6E04 /* Task3-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Task3-Info.plist"; sourceTree = "<group>"; };
+		996F8E0D17BB8EB0002A6E04 /* Tweets.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Tweets.plist; sourceTree = "<group>"; };
+		996F8E0F17BC018B002A6E04 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		996F8E1317BC057B002A6E04 /* Reachability.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Reachability.h; path = ../Reachability.h; sourceTree = "<group>"; };
+		996F8E1417BC057B002A6E04 /* Reachability.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = ../Reachability.m; sourceTree = "<group>"; };
+		996F8E1817BC21C1002A6E04 /* placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = placeholder.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				996F8E1017BC018B002A6E04 /* SystemConfiguration.framework in Frameworks */,
 				994E58F017B4273E006794BC /* Social.framework in Frameworks */,
 				994E58EB17B41E3A006794BC /* Twitter.framework in Frameworks */,
 				994E58E917B41E2F006794BC /* Accounts.framework in Frameworks */,
@@ -91,6 +102,7 @@
 		994E58C417B41E1D006794BC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				996F8E0F17BC018B002A6E04 /* SystemConfiguration.framework */,
 				994E58EF17B4273E006794BC /* Social.framework */,
 				994E58EA17B41E3A006794BC /* Twitter.framework */,
 				994E58E817B41E2F006794BC /* Accounts.framework */,
@@ -104,6 +116,7 @@
 		994E58CB17B41E1D006794BC /* Task3 */ = {
 			isa = PBXGroup;
 			children = (
+				996F8E1617BC0B99002A6E04 /* classes */,
 				996F8E0117B7D500002A6E04 /* Views */,
 				996F8DFC17B539FF002A6E04 /* AppDelegate */,
 				996F8DFA17B539BC002A6E04 /* Resourses */,
@@ -117,9 +130,10 @@
 		994E58CC17B41E1D006794BC /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				994E58CD17B41E1D006794BC /* Task3-Info.plist */,
 				994E58CE17B41E1D006794BC /* InfoPlist.strings */,
 				994E58D117B41E1D006794BC /* main.m */,
+				996F8E0B17BB8E7B002A6E04 /* Task3-Info.plist */,
+				996F8E0D17BB8EB0002A6E04 /* Tweets.plist */,
 				994E58D317B41E1D006794BC /* Task3-Prefix.pch */,
 				994E58D717B41E1D006794BC /* Default.png */,
 				994E58D917B41E1D006794BC /* Default@2x.png */,
@@ -151,6 +165,7 @@
 		996F8DFA17B539BC002A6E04 /* Resourses */ = {
 			isa = PBXGroup;
 			children = (
+				996F8E1717BC218A002A6E04 /* Design */,
 				996F8DFB17B539D7002A6E04 /* Storyboard */,
 			);
 			path = Resourses;
@@ -180,6 +195,23 @@
 				996F8E0317B7D522002A6E04 /* TweetCell.m */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		996F8E1617BC0B99002A6E04 /* classes */ = {
+			isa = PBXGroup;
+			children = (
+				996F8E1317BC057B002A6E04 /* Reachability.h */,
+				996F8E1417BC057B002A6E04 /* Reachability.m */,
+			);
+			path = classes;
+			sourceTree = "<group>";
+		};
+		996F8E1717BC218A002A6E04 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				996F8E1817BC21C1002A6E04 /* placeholder.png */,
+			);
+			path = Design;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -238,6 +270,9 @@
 				994E58DA17B41E1D006794BC /* Default@2x.png in Resources */,
 				994E58DC17B41E1D006794BC /* Default-568h@2x.png in Resources */,
 				994E58DF17B41E1D006794BC /* MainStoryboard.storyboard in Resources */,
+				996F8E0C17BB8E7B002A6E04 /* Task3-Info.plist in Resources */,
+				996F8E0E17BB8EB0002A6E04 /* Tweets.plist in Resources */,
+				996F8E1917BC21C1002A6E04 /* placeholder.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +283,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				996F8E1517BC0972002A6E04 /* Reachability.m in Sources */,
 				994E58D217B41E1D006794BC /* main.m in Sources */,
 				994E58D617B41E1D006794BC /* AppDelegate.m in Sources */,
 				994E58E217B41E1D006794BC /* ViewController.m in Sources */,

@@ -10,5 +10,12 @@
 
 @interface Tweet : NSObject
 
+@property (nonatomic, copy) NSString *text;
+@property (nonatomic, copy) NSString *author;
+@property (strong, nonatomic) NSString *photo;
+
+- (id)initWithText:(NSString *)theText
+            author:(NSString *)theAuthor
+             photo:(NSString *)thePhoto;
 
 @end

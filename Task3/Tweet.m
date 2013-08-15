@@ -10,4 +10,25 @@
 
 @implementation Tweet
 
+-(id) init {
+    return [self initWithText:nil
+                       author:nil
+                        photo:nil];
+}
+
+- (id)initWithText:(NSString *)theText
+            author:(NSString *)theAuthor 
+             photo:(NSString *)thePhoto {
+    self = [super init];
+    if(self) {
+        self.text = theText;
+        self.author =theAuthor;
+        self.photo = thePhoto;
+            }
+    return self;
+}
+
+
+
+
 @end

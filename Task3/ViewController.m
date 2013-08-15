@@ -8,9 +8,11 @@
 #import <Accounts/Accounts.h>
 #import <Twitter/Twitter.h>
 #import <Social/Social.h>
+#import "SystemConfiguration/SystemConfiguration.h"
 #import "ViewController.h"
 #import "DetailViewController.h"
 #import "TweetCell.h"
+#import "Reachability.h"
 
 
 
@@ -21,16 +23,39 @@
 @end
 
 @implementation ViewController
-
-
+BOOL flag;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    //[self fetchTimelineForUser:@"rinarish@mail.ru"];
-    [self getTimeLine];
-
+    
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus networkStatus = [reachability currentReachabilityStatus];
+    if (networkStatus == ReachableViaWWAN) {
+        
+        //Code when there is a WAN connection
+        NSLog(@"WAN");
+        flag=true;
+        
+    } else if (networkStatus == ReachableViaWiFi) {
+        
+        //Code when there is a WiFi connection
+        NSLog(@"wi-fi");
+        flag=true;
+        [self getTimeLine];
+        
+        
+    } else if (networkStatus == NotReachable) {
+        
+        //Code when there is no connection
+        NSLog(@"no internet");
+        flag=false;
+        
+        
+     
+    }
+  
 }
 
 
@@ -55,8 +80,6 @@
                  
                  NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
                  [parameters setObject:@"20" forKey:@"count"];
-                 //[parameters setObject:@"name" forKey:@"screen_name"];
-                 //[parameters setObject:@"20" forKey:@"include_entities"];
                  
                  SLRequest *postRequest = [SLRequest
                                            requestForServiceType:SLServiceTypeTwitter
@@ -73,6 +96,7 @@
                                          JSONObjectWithData:responseData
                                          options:NSJSONReadingMutableLeaves
                                          error:&error];
+                    //  self.dataSource =
                       
                       if (self.dataSource.count != 0) {
                           // NSLog(@"Ok");
@@ -87,8 +111,9 @@
              NSLog(@"Error");
          }
      }];
+    
 }
-//
+
 
 
 - (void)didReceiveMemoryWarning
@@ -97,11 +122,23 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [self.tweetTableView deselectRowAtIndexPath:[self.tweetTableView indexPathForSelectedRow] animated:YES];
+}
+
 #pragma mark -
 #pragma mark UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.dataSource.count;
+    if (flag==true) {
+        return self.dataSource.count;
+    }
+    else {
+        return 20;
+    }
+    
 }
 
 
@@ -110,25 +147,66 @@
     static NSString *CellIdentifier = @"Cell";
     
     TweetCell *cell = [self.tweetTableView
-                             dequeueReusableCellWithIdentifier:CellIdentifier];
+                       dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil) {
         cell = [[TweetCell alloc]
                 initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    
-    NSDictionary *tweet = self.dataSource[[indexPath row]];
 
-    cell.name.text = [tweet valueForKeyPath:@"user.name"];
-    cell.tweetText.text = tweet[@"text"];
-   // cell.poster.image = [UIImage imageNamed:[tweet valueForKeyPath:@"user.profile_image_url"]];
-    dispatch_queue_t main = dispatch_get_main_queue();
-    NSURL *imageURL = [NSURL URLWithString:[[tweet objectForKey:@"user"] objectForKey:@"profile_image_url"]];
-    NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-    dispatch_async(main, ^{
-        cell.poster.image = [UIImage imageWithData:imageData];
-    });
-    return cell;
+    
+    if (flag==true) {
+        NSDictionary *tweet = self.dataSource[[indexPath row]];
+        
+        // write to plist
+        NSMutableData *data = [[NSMutableData alloc]init];
+        NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc]initForWritingWithMutableData:data];
+        [archiver encodeObject:tweet forKey:@"count"];
+        [archiver finishEncoding];
+        [data writeToFile:@"/Users/rinarish/Desktop/Task3/Task3/Tweets.plist" atomically:YES];
+        
+
+        cell.name.text = [tweet valueForKeyPath:@"user.name"];
+        cell.tweetText.text = tweet[@"text"];
+        //cell.poster.image = [UIImage imageNamed:[tweet2 valueForKeyPath:@"user.profile_image_url"]];
+//        dispatch_queue_t main = dispatch_get_main_queue();
+//        NSURL *imageURL = [NSURL URLWithString:[[tweet objectForKey:@"user"] objectForKey:@"profile_image_url"]];
+//        NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+//        dispatch_async(main, ^{
+//            cell.poster.image = [UIImage imageWithData:imageData];
+//        });
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSString *imageUrl = [[tweet objectForKey:@"user"] objectForKey:@"profile_image_url"];
+            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                cell.poster.image = [UIImage imageWithData:data];
+            });
+        });
+        return cell;
+
+    } else {
+       
+        // read from plist
+        NSDictionary *tweet2;
+        NSData *data2 = [[NSMutableData alloc]initWithContentsOfFile:@"/Users/rinarish/Desktop/Task3/Task3/Tweets.plist"];
+        NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data2];
+        tweet2 = [unarchiver decodeObjectForKey: @"count"];
+        [unarchiver finishDecoding];
+        //       for (NSDictionary *key in self.dataSource)
+        //           NSLog(@"Style: %@", key[@"text"]);
+      
+        cell.name.text = [tweet2 valueForKeyPath:@"user.name"];
+        cell.tweetText.text = tweet2[@"text"];
+        cell.poster.image =[UIImage imageNamed:@"placeholder.png"];
+        
+        
+
+        return cell;
+        
+    }
+        
+
 }
 
 #pragma mark - UITableView Delegate
@@ -144,8 +222,24 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([segue.identifier isEqualToString:@"Detail"]) {
         DetailViewController *vc = (DetailViewController *)segue.destinationViewController;
-        vc.tweetDetail = [self.dataSource[[self.tweetTableView indexPathForSelectedRow].row] valueForKeyPath:@"text"];//[[self.tableView indexPathForSelectedRow].row]; //@"My label";
-        
+        if (flag==true) {
+            
+            vc.tweetDetail = [self.dataSource[[self.tweetTableView indexPathForSelectedRow].row] valueForKeyPath:@"text"];//[[self.tableView indexPathForSelectedRow].row]; //@"My label";
+            
+        } else {
+            
+            // read from plist
+            NSDictionary *tweet2;
+            NSData *data = [[NSMutableData alloc]initWithContentsOfFile:@"/Users/rinarish/Desktop/Task3/Task3/Tweets.plist"];
+            NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+            tweet2 = [unarchiver decodeObjectForKey: @"count"];
+            [unarchiver finishDecoding];
+            
+            
+            vc.tweetDetail = [tweet2 valueForKeyPath:@"text"];
+        //vc.tweetDetail = [tweet2[[self.tweetTableView indexPathForSelectedRow].row] valueForKeyPath:@"text"];//[[self.tableView indexPathForSelectedRow].row]; //@"My label";
+            
+        }
     }
 }
 
