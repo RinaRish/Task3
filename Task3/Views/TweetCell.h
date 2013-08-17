@@ -13,5 +13,6 @@
 @property(nonatomic, weak) IBOutlet UILabel *name;
 @property(nonatomic, weak) IBOutlet UILabel *tweetText;
 @property(nonatomic, weak) IBOutlet UIImageView *poster;
+@property(nonatomic, weak) IBOutlet UILabel *location;
 
 @end

@@ -14,5 +14,6 @@
 @property (strong, nonatomic) IBOutlet UITableView *tweetTableView;
 @property (strong, nonatomic) NSArray *dataSource;
 
+- (IBAction)postNewTweet:(id)sender;
 
 @end

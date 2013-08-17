@@ -23,6 +23,8 @@
 @end
 
 @implementation ViewController
+
+
 BOOL flag;
 
 - (void)viewDidLoad
@@ -100,11 +102,13 @@ BOOL flag;
                       
                       if (self.dataSource.count != 0) {
                           // NSLog(@"Ok");
+                          NSLog(@"%@", self.dataSource);
                           dispatch_async(dispatch_get_main_queue(), ^{
                               [self.tweetTableView reloadData];
                           });
                       }
                   }];
+                 
              }
          } else {
              // Handle failure to get account access
@@ -155,26 +159,28 @@ BOOL flag;
     }
 
     
-    if (flag==true) {
-        NSDictionary *tweet = self.dataSource[[indexPath row]];
+    if (flag==true) { //if we have internet
+        static int count = 0;
+        NSDictionary *tweet = self.dataSource[indexPath.row];
         
-        // write to plist
-        NSMutableData *data = [[NSMutableData alloc]init];
-        NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc]initForWritingWithMutableData:data];
-        [archiver encodeObject:tweet forKey:@"count"];
+        // WRITE TO PLIST
+        NSMutableData *data = [[NSMutableData alloc] init];
+        NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+        [archiver encodeObject:tweet forKey:[NSString stringWithFormat:@"tweet_%d", count]];
+        ++count;
+        [archiver encodeObject:@(count) forKey:@"count"];
         [archiver finishEncoding];
-        [data writeToFile:@"/Users/rinarish/Desktop/Task3/Task3/Tweets.plist" atomically:YES];
+        NSError *error;
+        if(![data writeToFile:@"/Users/rinarish/Desktop/Task3/Task3/Tweets.plist" options:NSDataWritingAtomic error:&error])
+        {
+            NSLog(@"%@", error);
+        }
         
 
         cell.name.text = [tweet valueForKeyPath:@"user.name"];
         cell.tweetText.text = tweet[@"text"];
-        //cell.poster.image = [UIImage imageNamed:[tweet2 valueForKeyPath:@"user.profile_image_url"]];
-//        dispatch_queue_t main = dispatch_get_main_queue();
-//        NSURL *imageURL = [NSURL URLWithString:[[tweet objectForKey:@"user"] objectForKey:@"profile_image_url"]];
-//        NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-//        dispatch_async(main, ^{
-//            cell.poster.image = [UIImage imageWithData:imageData];
-//        });
+        
+
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSString *imageUrl = [[tweet objectForKey:@"user"] objectForKey:@"profile_image_url"];
             NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
@@ -183,25 +189,28 @@ BOOL flag;
                 cell.poster.image = [UIImage imageWithData:data];
             });
         });
+        
+        if([tweet valueForKeyPath:@"place.attributes.country"]!=nil)
+            cell.location.text = @"undefinied"; 
+        else cell.location.text = [tweet valueForKeyPath:@"place.attributes.name"];
         return cell;
 
-    } else {
+    } else { // NO INTERNET
        
-        // read from plist
-        NSDictionary *tweet2;
-        NSData *data2 = [[NSMutableData alloc]initWithContentsOfFile:@"/Users/rinarish/Desktop/Task3/Task3/Tweets.plist"];
+        // READ FROM PLIST
+//        NSDictionary *tweet2;
+        NSData *data2 = [[NSMutableData alloc] initWithContentsOfFile:@"/Users/rinarish/Desktop/Task3/Task3/Tweets.plist"];
         NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data2];
-        tweet2 = [unarchiver decodeObjectForKey: @"count"];
-        [unarchiver finishDecoding];
-        //       for (NSDictionary *key in self.dataSource)
-        //           NSLog(@"Style: %@", key[@"text"]);
-      
-        cell.name.text = [tweet2 valueForKeyPath:@"user.name"];
-        cell.tweetText.text = tweet2[@"text"];
-        cell.poster.image =[UIImage imageNamed:@"placeholder.png"];
+        //NSNumber *localCount = [unarchiver decodeObjectForKey:@"count"];
+        [unarchiver decodeObjectForKey:@"count"];
+//        for(NSInteger i = 0; i < localCount.integerValue; ++i) {
+            NSDictionary *tweet = [unarchiver decodeObjectForKey:[NSString stringWithFormat:@"tweet_%d", indexPath.row]];
+            [unarchiver finishDecoding];
+            cell.name.text = [tweet valueForKeyPath:@"user.name"];
+            cell.tweetText.text = tweet[@"text"];
+            cell.poster.image =[UIImage imageNamed:@"placeholder.png"];
+//        }
         
-        
-
         return cell;
         
     }
@@ -229,20 +238,46 @@ BOOL flag;
         } else {
             
             // read from plist
-            NSDictionary *tweet2;
-            NSData *data = [[NSMutableData alloc]initWithContentsOfFile:@"/Users/rinarish/Desktop/Task3/Task3/Tweets.plist"];
-            NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
-            tweet2 = [unarchiver decodeObjectForKey: @"count"];
+            NSData *data2 = [[NSMutableData alloc] initWithContentsOfFile:@"/Users/rinarish/Desktop/Task3/Task3/Tweets.plist"];
+            NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data2];
+            NSNumber *localCount = [unarchiver decodeObjectForKey:@"count"];
+            //        for(NSInteger i = 0; i < localCount.integerValue; ++i) {
+            NSDictionary *tweet = [unarchiver decodeObjectForKey:[NSString stringWithFormat:@"tweet_%d", localCount]];
             [unarchiver finishDecoding];
             
             
-            vc.tweetDetail = [tweet2 valueForKeyPath:@"text"];
+            vc.tweetDetail = [tweet valueForKeyPath:@"text"];
         //vc.tweetDetail = [tweet2[[self.tweetTableView indexPathForSelectedRow].row] valueForKeyPath:@"text"];//[[self.tableView indexPathForSelectedRow].row]; //@"My label";
             
         }
     }
 }
 
+
+
+
+- (IBAction)postNewTweet:(id)sender {
+    if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter])
+    {
+        SLComposeViewController *tweetSheet = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+        [tweetSheet setInitialText:@""];
+        //[tweetSheet addImage:[UIImage imageNamed:@"/Applications/iPhoto.app"]];
+
+        [self presentViewController:tweetSheet animated:YES completion:nil];
+        
+       
+    }
+    else
+    {
+        UIAlertView *alertView = [[UIAlertView alloc]
+                                  initWithTitle:@"Sorry"
+                                  message:@"You can't send a tweet right now, make sure your device has an internet connection and you have at least one Twitter account setup"
+                                  delegate:self
+                                  cancelButtonTitle:@"OK"
+                                  otherButtonTitles:nil];
+        [alertView show];
+    }
+}
 @end
 
 
